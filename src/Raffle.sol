@@ -44,7 +44,10 @@ contract Raffe {
     i_entranceFee = entranceFee;
   }
   
-  function enterRaffle() public payable {}
+  function enterRaffle() public payable {
+    // This cost a lot of gas to have this as a string
+    require(msg.value >= i_entranceFee, "Not enough ETH sent!");
+  }
 
   function pickWinner() public {}
 
