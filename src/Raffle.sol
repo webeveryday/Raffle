@@ -35,6 +35,9 @@ pragma solidity ^0.8.18;
  * @dev It implements Chainlink VRFv2 and Chainlink Automation
  */
 contract Raffe {
+  /** Errors */
+  error SendMoreToEnterRaffle();
+
   // constant is the cheapest gas
   // immutable is cheap gas
   // i_ prefix for immutable variable
@@ -46,7 +49,11 @@ contract Raffe {
   
   function enterRaffle() public payable {
     // This cost a lot of gas to have this as a string
-    require(msg.value >= i_entranceFee, "Not enough ETH sent!");
+    // require(msg.value >= i_entranceFee, "Not enough ETH sent!");
+    if (msg.value >= i_entranceFee) {
+      revert SendMoreToEnterRaffle();
+    }
+
   }
 
   function pickWinner() public {}
