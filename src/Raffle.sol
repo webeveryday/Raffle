@@ -48,12 +48,18 @@ contract Raffe {
   }
   
   function enterRaffle() public payable {
+    // EX 1 - Require Statement
     // This cost a lot of gas to have this as a string
     // require(msg.value >= i_entranceFee, "Not enough ETH sent!");
-    if (msg.value >= i_entranceFee) {
-      revert SendMoreToEnterRaffle();
-    }
 
+    // EX 2 - Custom Error
+    // if (msg.value >= i_entranceFee) {
+    //   revert SendMoreToEnterRaffle();
+    // }
+
+    // EX 3 - Custom Error
+    // This feature is only available if you compile your Solidity with IR, it takes a lot of time to compile
+    require(msg.value >= i_entranceFee, SendMoreToEnterRaffle());
   }
 
   function pickWinner() public {}
