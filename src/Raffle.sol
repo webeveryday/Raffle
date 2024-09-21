@@ -36,12 +36,18 @@ pragma solidity ^0.8.18;
  */
 contract Raffe {
   /** Errors */
-  error SendMoreToEnterRaffle();
+  // Give prefix of the contract name and then two underscores before the error for best practices
+  error Raffe__SendMoreToEnterRaffle();
 
   // constant is the cheapest gas
   // immutable is cheap gas
   // i_ prefix for immutable variable
   uint256 private immutable i_entranceFee;
+
+  // Keep track of all players
+  // Dynamic Array
+  // It payable because one of the participants registered in this array will be paid the ETH prize
+  address payable[] private s_players;
 
   constructor(uint256 entranceFee) {
     i_entranceFee = entranceFee;
@@ -53,13 +59,15 @@ contract Raffe {
     // require(msg.value >= i_entranceFee, "Not enough ETH sent!");
 
     // EX 2 - Custom Error
-    // if (msg.value >= i_entranceFee) {
-    //   revert SendMoreToEnterRaffle();
-    // }
+    if (msg.value >= i_entranceFee) {
+      revert Raffe__SendMoreToEnterRaffle();
+    }
 
     // EX 3 - Custom Error
     // This feature is only available if you compile your Solidity with IR, it takes a lot of time to compile
-    require(msg.value >= i_entranceFee, SendMoreToEnterRaffle());
+    // require(msg.value >= i_entranceFee, SendMoreToEnterRaffle());
+
+    s_players.push(payable(msg.sender));
   }
 
   function pickWinner() public {}
