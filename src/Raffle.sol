@@ -49,6 +49,9 @@ contract Raffe {
   // It payable because one of the participants registered in this array will be paid the ETH prize
   address payable[] private s_players;
 
+  /** Events */
+  event RaffleEntered(address indexed player);
+
   constructor(uint256 entranceFee) {
     i_entranceFee = entranceFee;
   }
@@ -68,6 +71,12 @@ contract Raffe {
     // require(msg.value >= i_entranceFee, SendMoreToEnterRaffle());
 
     s_players.push(payable(msg.sender));
+
+    // Use event when we update something in storage
+    // 1. Makes migration easier
+    // 2. Makes front end "indexing" easier
+    emit RaffleEntered(msg.sender);
+    
   }
 
   function pickWinner() public {}
