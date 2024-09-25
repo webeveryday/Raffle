@@ -48,6 +48,8 @@ contract Raffe {
   // @dev The duration of the lottery in seconds
   uint256 private immutable i_interval;
 
+  uint256 private s_lastTimeStamp;
+
   // Keep track of all players
   // Dynamic Array
   // It payable because one of the participants registered in this array will be paid the ETH prize
@@ -59,6 +61,7 @@ contract Raffe {
   constructor(uint256 entranceFee, uint256 interval) {
     i_entranceFee = entranceFee;
     i_interval = interval;
+    s_lastTimeStamp = block.timestamp;
   }
   
   function enterRaffle() external payable {
@@ -87,7 +90,14 @@ contract Raffe {
   // 1. Get a random number
   // 2. Use random number to pick a player
   // 3. Be automatically called
-  function pickWinner() external {}
+  function pickWinner() external {
+    // Check to see if enough time has passed
+
+    // 1000 - 900 = 100, 50
+    if ((block.timestamp - s_lastTimeStamp) > i_interval) {
+      revert();
+    }
+  }
 
   /** Getter Function */
   function getEntranceFee() external view returns (uint256) {
