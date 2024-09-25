@@ -44,6 +44,10 @@ contract Raffe {
   // i_ prefix for immutable variable
   uint256 private immutable i_entranceFee;
 
+  // Interval between lottery rounds
+  // @dev The duration of the lottery in seconds
+  uint256 private immutable i_interval;
+
   // Keep track of all players
   // Dynamic Array
   // It payable because one of the participants registered in this array will be paid the ETH prize
@@ -52,11 +56,12 @@ contract Raffe {
   /** Events */
   event RaffleEntered(address indexed player);
 
-  constructor(uint256 entranceFee) {
+  constructor(uint256 entranceFee, uint256 interval) {
     i_entranceFee = entranceFee;
+    i_interval = interval;
   }
   
-  function enterRaffle() public payable {
+  function enterRaffle() external payable {
     // EX 1 - Require Statement
     // This cost a lot of gas to have this as a string
     // require(msg.value >= i_entranceFee, "Not enough ETH sent!");
@@ -79,7 +84,10 @@ contract Raffe {
     
   }
 
-  function pickWinner() public {}
+  // 1. Get a random number
+  // 2. Use random number to pick a player
+  // 3. Be automatically called
+  function pickWinner() external {}
 
   /** Getter Function */
   function getEntranceFee() external view returns (uint256) {
