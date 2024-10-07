@@ -137,6 +137,9 @@ contract Raffe is VRFConsumerBaseV2Plus{
     uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
   }
 
+  // This function is called when Chainlink node give us the random number
+  // It get called from rawFulfilRandomWords in VRFConsumerBaseV2Plus
+  // Add keyword 'override' because of inheriting VRFConsumerBaseV2Plus in the abstract contract, it was marked as virtual, which mean it is meant to be overidden (update or implemented in our contract)
   function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override{}
 
   /** Getter Function */
