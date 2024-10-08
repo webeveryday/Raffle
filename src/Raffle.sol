@@ -41,6 +41,7 @@ contract Raffe is VRFConsumerBaseV2Plus{
   /** Errors */
   // Give prefix of the contract name and then two underscores before the error for best practices
   error Raffe__SendMoreToEnterRaffle();
+  error Raffe__TransferFailed();
 
   // Cap locks for naming constant variables
   uint16 private constant REQUEST_CONFIRMATIONS = 3;
@@ -59,6 +60,7 @@ contract Raffe is VRFConsumerBaseV2Plus{
   uint256 private immutable i_subscriptionId;
   uint32 private immutable i_callbackGasLimit;
   uint256 private s_lastTimeStamp;
+  address private s_recentWinner;
 
   // Keep track of all players
   // Dynamic Array
@@ -140,7 +142,19 @@ contract Raffe is VRFConsumerBaseV2Plus{
   // This function is called when Chainlink node give us the random number
   // It get called from rawFulfilRandomWords in VRFConsumerBaseV2Plus
   // Add keyword 'override' because of inheriting VRFConsumerBaseV2Plus in the abstract contract, it was marked as virtual, which mean it is meant to be overidden (update or implemented in our contract)
-  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override{}
+  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override{
+    // Pick the winner
+    uint256 indexOfWinner = randomWords[0] % s_players.length;
+    address payable recentWinner = s_players[indexOfWinner];
+    s_recentWinner = recentWinner;
+
+    // Pay the winner
+    (bool success,) = recentWinner.call{value: address(this).balance}("");
+
+    if (!success) {
+      revert Raffe__TransferFailed();
+    }
+  }
 
   /** Getter Function */
   function getEntranceFee() external view returns (uint256) {
