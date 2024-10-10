@@ -42,6 +42,19 @@ contract Raffe is VRFConsumerBaseV2Plus{
   // Give prefix of the contract name and then two underscores before the error for best practices
   error Raffe__SendMoreToEnterRaffle();
   error Raffe__TransferFailed();
+  error Raffle__RaffleNotOpen();
+
+  /** Type Declarations */
+
+  // Enum is a type declaration
+  // Enums can be used to create custom types with a finite set of constant values
+  enum RaffleState {
+    // Each one of these states can be converted to integer
+    OPEN,               // 0
+    CALCULATING         // 1
+  }
+
+  /** State Variables */
 
   // Cap locks for naming constant variables
   uint16 private constant REQUEST_CONFIRMATIONS = 3;
@@ -67,6 +80,8 @@ contract Raffe is VRFConsumerBaseV2Plus{
   // It payable because one of the participants registered in this array will be paid the ETH prize
   address payable[] private s_players;
 
+  RaffleState private s_raffleState;
+
   /** Events */
   event RaffleEntered(address indexed player);
 
@@ -84,6 +99,8 @@ contract Raffe is VRFConsumerBaseV2Plus{
     i_keyHash = gasLane;
     i_subscriptionId = subscriptionId;
     i_callbackGasLimit = callbackGasLimit;
+
+    s_raffleState = RaffleState.OPEN;     // Same as RaffleState[0]
 
     // Set the value to VRFConsumerBaseV2Plus state variable
     //s_vrfCoordinator.requestRandomWords();
@@ -103,6 +120,10 @@ contract Raffe is VRFConsumerBaseV2Plus{
     // This feature is only available if you compile your Solidity with IR, it takes a lot of time to compile
     // require(msg.value >= i_entranceFee, SendMoreToEnterRaffle());
 
+    if (s_raffleState != RaffleState.OPEN) {
+      revert Raffle__RaffleNotOpen();
+    }
+
     s_players.push(payable(msg.sender));
 
     // Use event when we update something in storage
@@ -117,11 +138,12 @@ contract Raffe is VRFConsumerBaseV2Plus{
   // 3. Be automatically called
   function pickWinner() external {
     // Check to see if enough time has passed
-
     // 1000 - 900 = 100, 50
     if ((block.timestamp - s_lastTimeStamp) > i_interval) {
       revert();
     }
+
+    s_raffleState = RaffleState.CALCULATING;
 
     // Get our random number 2.5
     // 1. Request RNG
@@ -147,6 +169,7 @@ contract Raffe is VRFConsumerBaseV2Plus{
     uint256 indexOfWinner = randomWords[0] % s_players.length;
     address payable recentWinner = s_players[indexOfWinner];
     s_recentWinner = recentWinner;
+    s_raffleState = RaffleState.OPEN;
 
     // Pay the winner
     (bool success,) = recentWinner.call{value: address(this).balance}("");
