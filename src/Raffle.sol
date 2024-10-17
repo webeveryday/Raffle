@@ -170,10 +170,19 @@ contract Raffe is VRFConsumerBaseV2Plus {
         uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
     }
 
+    // CEI: Checks, Effects, Interactions Patten (Methodology)
+    // To defend against re-entrancy attacks
+
     // This function is called when Chainlink node give us the random number
     // It get called from rawFulfilRandomWords in VRFConsumerBaseV2Plus
     // Add keyword 'override' because of inheriting VRFConsumerBaseV2Plus in the abstract contract, it was marked as virtual, which mean it is meant to be overidden (update or implemented in our contract)
     function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
+        // Checks */
+        // -> require(), conditionals
+        // Start with the checks on the top for gas efficient
+
+        // Effects (Internal Contract State) */
+        
         // Pick the winner
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
@@ -184,14 +193,16 @@ contract Raffe is VRFConsumerBaseV2Plus {
         s_players = new address payable[](0);       // Reset to a brand new blank array
         s_lastTimeStamp = block.timestamp;
 
+        emit WinnerPicked(s_recentWinner);
+
+        // Interactions (External Contract Interactions) */
+
         // Pay the winner
         (bool success,) = recentWinner.call{value: address(this).balance}("");
 
         if (!success) {
             revert Raffe__TransferFailed();
         }
-
-        emit WinnerPicked(s_recentWinner);
     }
 
     /**
