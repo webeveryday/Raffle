@@ -150,7 +150,7 @@ contract Raffe is VRFConsumerBaseV2Plus {
      * The following should be true in order for upkeepNeeded to be true:
      * 1. The time interval has passed between raffle runs
      * 2. The lottery is open
-     * 3. The contract has ETH
+     * 3. The contract has ETH (has players)
      * 4. Implicitly, your subscription has LINK
      * @param - ignored
      * @return upkeepNeeded - true if it's time to restart the lottery
@@ -161,7 +161,16 @@ contract Raffe is VRFConsumerBaseV2Plus {
         view
         returns (bool upkeepNeeded, bytes memory /* performData */)
     {
+        bool timeHasPassed = ((block.timestamp - s_lastTimeStamp) >= i_interval);
+        bool isOpen = s_raffleState == RaffleState.OPEN;
+        bool hasBalance = address(this).balance > 0;
+        bool hasPlayers = s_players.length > 0;
 
+        // Return True if all is true
+        upkeepNeeded = timeHasPassed && isOpen && hasBalance && hasPlayers;
+
+        // "" for returning null
+        return (upkeepNeeded, "");
     }
 
     // 1. Get a random number
