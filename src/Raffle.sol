@@ -176,10 +176,14 @@ contract Raffe is VRFConsumerBaseV2Plus {
     // 1. Get a random number
     // 2. Use random number to pick a player
     // 3. Be automatically called
-    function pickWinner() external {
+    function performUpkeep(bytes calldata /* performData */) external {
         // Check to see if enough time has passed
         // 1000 - 900 = 100, 50
-        if ((block.timestamp - s_lastTimeStamp) > i_interval) {
+        // if ((block.timestamp - s_lastTimeStamp) > i_interval) {
+        //     revert();
+        // }
+        (bool upkeepNeeded, ) = checkUpkeep("");
+        if (!upkeepNeeded) {
             revert();
         }
 
