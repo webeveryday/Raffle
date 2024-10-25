@@ -45,6 +45,7 @@ contract Raffe is VRFConsumerBaseV2Plus {
     error Raffe__SendMoreToEnterRaffle();
     error Raffe__TransferFailed();
     error Raffle__RaffleNotOpen();
+    error Raffle_UpKeepNotNeeded(uint256 balance, uint256 playersLength, uint256 raffleState);
 
     /**
      * Type Declarations
@@ -184,7 +185,8 @@ contract Raffe is VRFConsumerBaseV2Plus {
         // }
         (bool upkeepNeeded, ) = checkUpkeep("");
         if (!upkeepNeeded) {
-            revert();
+            // You can add parameters to the custom error for more information about the error
+            revert Raffle_UpKeepNotNeeded(address(this).balance, s_players.length, uint256(s_raffleState));
         }
 
         s_raffleState = RaffleState.CALCULATING;
