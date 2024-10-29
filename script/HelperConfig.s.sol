@@ -3,7 +3,11 @@ pragma solidity ^0.8.18;
 
 import {Script} from "forge-std/Script.sol";
 
-contract HelperConfig is Script {
+abstract contract CodeConstants {
+  uint256 public constant ETH_SEPOLIA_CHAIN_ID = 11155111;
+}
+
+contract HelperConfig is CodeConstants, Script {
   struct NetworkConfig {
     uint256 entranceFee;
     uint256 interval;
@@ -17,7 +21,7 @@ contract HelperConfig is Script {
   mapping(uint256 chainId => NetworkConfig) public networkConfigs;
 
   constructor() {
-    networkConfigs[11155111] = getSepoliaEthConfig();
+    networkConfigs[ETH_SEPOLIA_CHAIN_ID] = getSepoliaEthConfig();
   }
 
   function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
