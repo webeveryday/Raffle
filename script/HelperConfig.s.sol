@@ -5,6 +5,7 @@ import {Script} from "forge-std/Script.sol";
 
 abstract contract CodeConstants {
   uint256 public constant ETH_SEPOLIA_CHAIN_ID = 11155111;
+  uint256 public constant LOCAL_CHAIN_ID = 31337;
 }
 
 contract HelperConfig is CodeConstants, Script {
@@ -34,4 +35,15 @@ contract HelperConfig is CodeConstants, Script {
         subscriptionId: 0
     });
   }
+
+  function getLocalConfig() public pure returns (NetworkConfig memory) {
+    return NetworkConfig({
+        entranceFee: 0.01 ether,
+        interval: 30, // 30 seconds
+        vrfCoordinator: address(0),
+        gasLane: "",
+        callbackGasLimit: 500000,
+        subscriptionId: 0
+    });
+}
 }
