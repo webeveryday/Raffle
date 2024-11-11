@@ -4,7 +4,7 @@ pragma solidity ^0.8.18;
 import {Test} from "forge-std/Test.sol";
 import {DeployRaffle} from "script/DeployRaffle.s.sol";
 import {Raffle} from "src/Raffle.sol";
-import {HelperConfig} from "./HelperConfig.s.sol";
+import {HelperConfig} from "script/HelperConfig.s.sol";
 
 contract RaffleTest is Test {
   Raffle public raffle;
@@ -33,5 +33,9 @@ contract RaffleTest is Test {
     gasLane = config.gasLane;
     callbackGasLimit = config.callbackGasLimit;
     subscriptionId = config.subscriptionId;
+  }
+
+  function testRaffleInitializesInOpenState() public view {
+    assert(raffle.getRaffleState() == Raffe.RaffleState.OPEN);
   }
 }
