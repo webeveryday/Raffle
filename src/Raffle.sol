@@ -37,7 +37,7 @@ import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/V
  * @notice This contract is for creating a sample raffle
  * @dev It implements Chainlink VRFv2 and Chainlink Automation
  */
-contract Raffe is VRFConsumerBaseV2Plus {
+contract Raffle is VRFConsumerBaseV2Plus {
     /**
      * Errors
      */
@@ -247,5 +247,9 @@ contract Raffe is VRFConsumerBaseV2Plus {
      */
     function getEntranceFee() external view returns (uint256) {
         return i_entranceFee;
+    }
+
+    function getRaffleState() external view returns (RaffleState) {
+        return s_raffleState;
     }
 }

@@ -24,7 +24,7 @@ contract RaffleTest is Test {
 
   function setUp() external {
     DeployRaffle deployer = new DeployRaffle();
-    (raffe, helperConfig) = deployer.deployContract();
+    (raffle, helperConfig) = deployer.deployContract();
 
     HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
     entranceFee = config.entranceFee;
@@ -36,6 +36,6 @@ contract RaffleTest is Test {
   }
 
   function testRaffleInitializesInOpenState() public view {
-    assert(raffle.getRaffleState() == Raffe.RaffleState.OPEN);
+    assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN);
   }
 }
