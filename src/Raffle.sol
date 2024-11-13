@@ -42,8 +42,8 @@ contract Raffle is VRFConsumerBaseV2Plus {
      * Errors
      */
     // Give prefix of the contract name and then two underscores before the error for best practices
-    error Raffe__SendMoreToEnterRaffle();
-    error Raffe__TransferFailed();
+    error Raffle__SendMoreToEnterRaffle();
+    error Raffle__TransferFailed();
     error Raffle__RaffleNotOpen();
     error Raffle_UpKeepNotNeeded(uint256 balance, uint256 playersLength, uint256 raffleState);
 
@@ -123,8 +123,8 @@ contract Raffle is VRFConsumerBaseV2Plus {
         // require(msg.value >= i_entranceFee, "Not enough ETH sent!");
 
         // EX 2 - Custom Error
-        if (msg.value >= i_entranceFee) {
-            revert Raffe__SendMoreToEnterRaffle();
+        if (msg.value < i_entranceFee) {
+            revert Raffle__SendMoreToEnterRaffle();
         }
 
         // EX 3 - Custom Error
@@ -238,7 +238,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         (bool success,) = recentWinner.call{value: address(this).balance}("");
 
         if (!success) {
-            revert Raffe__TransferFailed();
+            revert Raffle__TransferFailed();
         }
     }
 
