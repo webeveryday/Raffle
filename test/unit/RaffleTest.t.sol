@@ -18,7 +18,7 @@ contract RaffleTest is Test {
   uint32 callbackGasLimit;
 
   // Create an address based on the string
-  address public PLAYER = makeAddr("player");
+  address public PLAYER = makeAddr("Player");
   // Amount of ETH to send
   uint256 public constant STARTING_PLAYER_BALANCE = 10 ether;
 
@@ -37,5 +37,17 @@ contract RaffleTest is Test {
 
   function testRaffleInitializesInOpenState() public view {
     assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN);
+  }
+
+
+  // -- Enter Raffle -- //
+  
+  // Player enter the raffle without money
+  function testRaffleRevertsWhenYouDontPayEnough() public {
+    // Arrange
+    vm.prank(PLAYER);
+    // Act / Assert
+    vm.expectRevert(Raffle.Raffle__SendMoreToEnterRaffle.selector);
+    raffle.enterRaffle();
   }
 }
