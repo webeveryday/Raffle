@@ -79,4 +79,24 @@ contract RaffleTest is Test {
     // Assert
     raffle.enterRaffle{value: entranceFee}();
   }
+
+  function testDontAllowPlayersToEnterWhileRaffleIsCalculating() public {
+    // Arrange
+    vm.prank(PLAYER);
+    // Set up raffle
+    raffle.enterRaffle{value: entranceFee}();
+    // Set the `block.timestamp`
+    vm.warp(block.timestamp + interval  + 1);
+    // Set the `block.number`
+    // Roll it by the current block plus 1
+    // Add one new block
+    vm.roll(block.number + 1);
+    raffle.performUpkeep("");
+
+    // Act
+    vm.expectRevert(Raffle.Raffle__RaffleNotOpen.selector);
+    vm.prank(PLAYER);     // Make sure we are player
+    // Calling `enterRaffle` to check if it reverts as it should
+    raffle.enterRaffle{value: entranceFee}();
+  }
 }
