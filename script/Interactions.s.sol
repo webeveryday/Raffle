@@ -5,6 +5,7 @@ import {Script, console} from "forge-std/Script.sol";
 import {HelperConfig, CodeConstants} from "./HelperConfig.s.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 import {LinkToken} from "test/mocks/LinkToken.sol";
+import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 
 contract  CreateSubscription is Script {
   function createSubscriptionUsingConfig() public returns (uint256, address) {
@@ -60,5 +61,30 @@ contract FundSubscription is Script, CodeConstants {
 
   function run() public {
     fundSubscriptionUsingConfig();
+  }
+}
+
+contract AddConsumner is Script {
+  function addConsumnerUsingConfig(address mostRecentlyDeployed) public {
+    HelperConfig helperConfig = new HelperConfig();
+    uint256 subId = helperConfig.getConfig().subscriptionId;
+    address vrfCoordinator = helperConfig.getConfig().vrfCoordinator;
+    addConsumner(mostRecentlyDeployed, vrfCoordinator, subId);
+  }
+
+  function addConsumner(address contractToAddtoVrf, address vrfCoordinator, uint256 subId) public {
+    console.log("Add consumer contract: ", contractToAddtoVrf);
+    console.log("To VRF Coordinator: ", vrfCoordinator);
+    console.log("On ChainId: ", block.chainid);
+
+    vm.startBroadcast();
+    VRFCoordinatorV2_5Mock(vrfCoordinator).addConsumer(subId, contractToAddtoVrf);
+    vm.stopBroadcast();
+  }
+
+  function run() external {
+    // Get the recent Raffle contract address
+    address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("Raffle", block.chainid);
+    addConsumnerUsingConfig(mostRecentlyDeployed);
   }
 }
