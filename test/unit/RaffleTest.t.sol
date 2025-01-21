@@ -134,6 +134,7 @@ contract RaffleTest is Test {
   /**
   * PERFORM UPKEEP
   */
+
   function testPerformUpkeepCanOnlyRunIfCheckUpkeepIsTrue() public {
     // Arrange
     vm.prank(PLAYER);
@@ -142,6 +143,30 @@ contract RaffleTest is Test {
     vm.roll(block.number + 1);
 
     // Act / Assert
+    raffle.performUpkeep("");
+  }
+
+  function testPerformUpkeepRevertsIfCheckUpkeepIsFalse() public {
+    // Arrange
+    uint256 currentBalance = 0;
+    uint256 numPlayers = 0;
+    Raffle.RaffleState rState = raffle.getRaffleState();
+
+    vm.prank(PLAYER);
+    raffle.enterRaffle{value: entranceFee}();
+    currentBalance = currentBalance + entranceFee;
+    numPlayers = 1;
+
+    // Act / Assert
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        Raffle.Raffle__UpKeepNotNeeded.selector,
+        currentBalance,
+        numPlayers,
+        rState
+      )
+    );
+
     raffle.performUpkeep("");
   }
 }
