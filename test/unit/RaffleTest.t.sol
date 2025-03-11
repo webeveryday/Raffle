@@ -197,9 +197,11 @@ contract RaffleTest is Test {
 
    // -- FULFILLRANDOMWORDS -- //
 
-   function testFulfillRandomWordsCanOnlyBeCalledAfterPerformUpkeep() public raffleEntered {
+  // This is an example of stateless fuzz test
+  // If you pass something to the parameter, forge will pick many values to test this
+  function testFulfillRandomWordsCanOnlyBeCalledAfterPerformUpkeep(uint256 randomRequestId) public raffleEntered {
     // Arrange / Act / Assert
     vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
-    VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(0, address(raffle));
-   }
+    VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(randomRequestId, address(raffle));
+  }
 }
