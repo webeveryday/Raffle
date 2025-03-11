@@ -47,6 +47,14 @@ contract RaffleTest is Test {
     assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN);
   }
 
+  modifier raffleEntered() {
+    // Arrange
+    vm.prank(PLAYER);
+    raffle.enterRaffle{value: entranceFee}();
+    vm.warp(block.timestamp + interval  + 1);
+    vm.roll(block.number + 1);
+    _;
+  }
 
   // -- Enter Raffle -- //
   
@@ -172,13 +180,7 @@ contract RaffleTest is Test {
   }
 
   // Test for data from emitted events in our test
-  function testPerformUpkeepUpkeepUpdatesRaffleAndEmitsRequestId() public {
-    // Arrange
-    vm.prank(PLAYER);
-    raffle.enterRaffle{value: entranceFee}();
-    vm.warp(block.timestamp + interval  + 1);
-    vm.roll(block.number + 1);
-
+  function testPerformUpkeepUpkeepUpdatesRaffleAndEmitsRequestId() public raffleEntered {
     // Act
     // Keep track of event emit and put them into an array
     vm.recordLogs();
